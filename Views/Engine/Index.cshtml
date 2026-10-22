@@ -1,0 +1,118 @@
+@using CardPlatformDemo.Models
+@model TransactionInput
+@{
+    ViewData["Title"] = "Cortex Rule Engine";
+    var rules = ViewBag.RuleTable as List<EngineRule> ?? new();
+    var products = ViewBag.Products as List<CardProduct> ?? new();
+    var decision = ViewBag.Decision as EngineDecision;
+}
+
+<section class="cp-engine-hero">
+    <div class="container">
+        <a asp-controller="Home" asp-action="Index" class="cp-back">← Home</a>
+        <h1 class="cp-detail-title">⚙️ Cortex Rule Engine</h1>
+        <p class="cp-detail-desc">
+            The rule engine externalises card decisions as <strong>editable rules</strong>. Each transaction is
+            evaluated top-to-bottom; the first rule that fires decides the outcome. Change a rule and it applies
+            instantly — <strong>no code deployment</strong>.
+        </p>
+    </div>
+</section>
+
+<div class="container cp-detail-body">
+
+    <!-- Reference table -->
+    <h2 class="cp-section-title">How the rules work</h2>
+    <div class="table-responsive mb-5">
+        <table class="table cp-rule-table">
+            <thead>
+                <tr><th>Situation</th><th>Example rule</th><th>Result</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var r in rules)
+                {
+                    <tr>
+                        <td class="fw-semibold">@r.Situation</td>
+                        <td>@r.RuleText</td>
+                        <td>@r.Result</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Simulator -->
+    <h2 class="cp-section-title">Try it — evaluate a transaction</h2>
+    <p class="cp-section-sub">Set the scenario and press <strong>Evaluate</strong>. The engine shows every rule it checked and the decision it reached.</p>
+
+    <div class="row g-4">
+        <div class="col-lg-5">
+            <form method="post" class="cp-sim-form">
+                @Html.AntiForgeryToken()
+                <label class="cp-field">
+                    <span>Card product</span>
+                    <select asp-for="CardProductId" class="form-select">
+                        @foreach (var p in products)
+                        {
+                            <option value="@p.Id">@p.Name</option>
+                        }
+                    </select>
+                </label>
+
+                <div class="row g-2">
+                    <div class="col-6"><label class="cp-field"><span>Transaction amount</span><input asp-for="Amount" type="number" step="1" class="form-control" /></label></div>
+                    <div class="col-6"><label class="cp-field"><span>Daily limit</span><input asp-for="DailyLimit" type="number" step="1" class="form-control" /></label></div>
+                </div>
+                <div class="row g-2">
+                    <div class="col-6"><label class="cp-field"><span>Already spent today</span><input asp-for="AmountSpentToday" type="number" step="1" class="form-control" /></label></div>
+                    <div class="col-6"><label class="cp-field"><span>Contactless ceiling</span><input asp-for="ContactlessCeiling" type="number" step="1" class="form-control" /></label></div>
+                </div>
+
+                <div class="cp-switches">
+                    <label class="cp-switch"><input asp-for="CardActive" type="checkbox" /> <span>Card active</span></label>
+                    <label class="cp-switch"><input asp-for="SufficientFunds" type="checkbox" /> <span>Sufficient funds</span></label>
+                    <label class="cp-switch"><input asp-for="CardBlocked" type="checkbox" /> <span>Card blocked</span></label>
+                    <label class="cp-switch"><input asp-for="SuspiciousPattern" type="checkbox" /> <span>Suspicious pattern (fraud)</span></label>
+                    <label class="cp-switch"><input asp-for="Contactless" type="checkbox" /> <span>Contactless (tap)</span></label>
+                </div>
+
+                <button type="submit" class="btn cp-btn-primary btn-lg w-100 mt-3">Evaluate transaction</button>
+            </form>
+        </div>
+
+        <div class="col-lg-7">
+            @if (decision == null)
+            {
+                <div class="cp-result-empty">
+                    <div class="cp-result-empty-icon">⚙️</div>
+                    <p>Set a scenario on the left and press <strong>Evaluate</strong> to see the decision and the rule trace.</p>
+                    <p class="cp-hint">Tip: tick <em>Suspicious pattern</em> to see a fraud challenge, or set the amount above the daily limit to see a decline.</p>
+                </div>
+            }
+            else
+            {
+                <div class="cp-result">
+                    <div class="cp-result-head" style="background:@decision.OutcomeColor">
+                        <span class="cp-result-outcome">@decision.Outcome</span>
+                        <span class="cp-result-rule">@decision.FiredRule</span>
+                    </div>
+                    @if (decision.FeeApplied.HasValue && decision.Outcome == "APPROVE")
+                    {
+                        <div class="cp-result-fee">Fee applied: <strong>@decision.FeeApplied.Value.ToString("0.00")</strong></div>
+                    }
+                    <div class="cp-trace">
+                        <div class="cp-trace-title">Rule trace (evaluated in order)</div>
+                        @foreach (var t in decision.Trace)
+                        {
+                            <div class="cp-trace-line @(t.Fired ? "fired" : (t.Passed ? "pass" : "fail"))">
+                                <span class="cp-trace-icon">@(t.Fired ? "➡" : (t.Passed ? "✔" : "✖"))</span>
+                                <span class="cp-trace-rule">@t.Rule</span>
+                                <span class="cp-trace-eval">@t.Evaluation</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

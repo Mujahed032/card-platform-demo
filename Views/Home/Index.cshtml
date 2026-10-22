@@ -1,0 +1,116 @@
+﻿@using CardPlatformDemo.Models
+@model CardPlatformDemo.Services.CardCatalog
+@{
+    ViewData["Title"] = "Home";
+}
+
+<!-- HERO BANNER -->
+<section class="cp-hero">
+    <div class="container">
+        <div class="cp-hero-badge">BANKING · CARDS · PAYMENTS</div>
+        <h1 class="cp-hero-title">How Banks Power Their Cards</h1>
+        <p class="cp-hero-lead">
+            Most banks don't build card systems from scratch. Card issuance, authorization, fraud control,
+            fees and installments are complex and heavily regulated — so banks <strong>integrate</strong> with
+            specialised platforms and focus on the customer experience.
+        </p>
+        <div class="row cp-hero-cards g-3">
+            <div class="col-md-6">
+                <div class="cp-hero-card">
+                    <div class="cp-hero-card-icon">🗂️</div>
+                    <h3>eMcREY — Card Management System</h3>
+                    <p>Runs the full life of a card: <strong>issue, activate, authorize, maintain, renew and bill</strong>.
+                       The back-office engine that owns every card record.</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="cp-hero-card">
+                    <div class="cp-hero-card-icon">⚙️</div>
+                    <h3>FIS Cortex — Rule Engine</h3>
+                    <p>Decides every transaction in real time: <strong>approve, decline, challenge</strong>, apply
+                       <strong>fraud rules, fees, commission and installments</strong> — all as editable rules, no code deploys.</p>
+                </div>
+            </div>
+        </div>
+        <a href="#catalog" class="cp-scroll-hint">↓ Explore the card products</a>
+    </div>
+</section>
+
+<!-- WHY INTEGRATE -->
+<section class="cp-why">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-5">
+                <h2 class="cp-section-title">Why integrate instead of build?</h2>
+            </div>
+            <div class="col-lg-7">
+                <div class="row g-3">
+                    <div class="col-sm-6"><div class="cp-why-item"><span>🔐</span> Card networks (Visa / Mastercard / Mada) require heavy certification.</div></div>
+                    <div class="col-sm-6"><div class="cp-why-item"><span>🛡️</span> Fraud, PCI DSS and security must be built in from day one.</div></div>
+                    <div class="col-sm-6"><div class="cp-why-item"><span>⚡</span> Real-time authorization at scale is hard to run reliably.</div></div>
+                    <div class="col-sm-6"><div class="cp-why-item"><span>📈</span> Rules change constantly — platforms let business users adjust without code.</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CARD CATALOG -->
+<div id="catalog" class="container cp-catalog">
+
+    <!-- eMcREY -->
+    <div id="emcrey" class="cp-platform-head">
+        <div class="cp-platform-tag" style="background:#1f7a8c;">eMcREY</div>
+        <div>
+            <h2 class="cp-section-title mb-1">Card Management System Products</h2>
+            <p class="cp-section-sub">Click a card to walk through its lifecycle — issue, activate, authorize, maintain — with genuine vs fraud outcomes at each step.</p>
+        </div>
+    </div>
+    <div class="row g-4 mb-5">
+        @foreach (var p in Model.ByPlatform(Platform.eMcREY))
+        {
+            <div class="col-md-6 col-lg-3">
+                <a class="cp-card" style="--accent:@p.Accent" asp-controller="Cards" asp-action="Details" asp-route-id="@p.Id">
+                    <div class="cp-card-top">
+                        <span class="cp-card-icon">@p.Icon</span>
+                        <span class="cp-card-cat">@p.Category</span>
+                    </div>
+                    <h3 class="cp-card-name">@p.Name</h3>
+                    <p class="cp-card-desc">@p.ShortDescription</p>
+                    <span class="cp-card-link">View lifecycle →</span>
+                </a>
+            </div>
+        }
+    </div>
+
+    <!-- Cortex -->
+    <div id="cortex" class="cp-platform-head">
+        <div class="cp-platform-tag" style="background:#c0392b;">FIS Cortex</div>
+        <div>
+            <h2 class="cp-section-title mb-1">Rule Engine Products</h2>
+            <p class="cp-section-sub">These products are driven by the Cortex rule engine — management, processing, fraud, fees/commission and installment collection.</p>
+        </div>
+    </div>
+    <div class="row g-4 mb-4">
+        @foreach (var p in Model.ByPlatform(Platform.Cortex))
+        {
+            <div class="col-md-6 col-lg-3">
+                <a class="cp-card" style="--accent:@p.Accent" asp-controller="Cards" asp-action="Details" asp-route-id="@p.Id">
+                    <div class="cp-card-top">
+                        <span class="cp-card-icon">@p.Icon</span>
+                        <span class="cp-card-cat">@p.Category</span>
+                    </div>
+                    <h3 class="cp-card-name">@p.Name</h3>
+                    <p class="cp-card-desc">@p.ShortDescription</p>
+                    <span class="cp-card-link">View details →</span>
+                </a>
+            </div>
+        }
+    </div>
+
+    <div class="text-center my-5">
+        <a class="btn cp-btn-primary btn-lg" asp-controller="Engine" asp-action="Index">
+            ⚙️ Try the Cortex Rule Engine Simulator
+        </a>
+    </div>
+</div>

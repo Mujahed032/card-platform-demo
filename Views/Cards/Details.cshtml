@@ -1,0 +1,100 @@
+@using CardPlatformDemo.Models
+@model CardProduct
+@{
+    ViewData["Title"] = Model.Name;
+    var steps = ViewBag.Lifecycle as List<LifecycleStep> ?? new();
+    bool isCortex = Model.Platform == Platform.Cortex;
+}
+
+<section class="cp-detail-hero" style="--accent:@Model.Accent">
+    <div class="container">
+        <a asp-controller="Home" asp-action="Index" class="cp-back">← All cards</a>
+        <div class="cp-detail-head">
+            <div class="cp-detail-icon">@Model.Icon</div>
+            <div>
+                <div class="cp-detail-platform">@(isCortex ? "FIS Cortex · Rule Engine" : "eMcREY · Card Management System")</div>
+                <h1 class="cp-detail-title">@Model.Name</h1>
+                <p class="cp-detail-desc">@Model.LongDescription</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container cp-detail-body">
+
+    <!-- Features -->
+    <h2 class="cp-section-title">What this product does</h2>
+    <div class="row g-3 mb-5">
+        @foreach (var f in Model.Features)
+        {
+            <div class="col-md-4"><div class="cp-feature">✔ @f</div></div>
+        }
+    </div>
+
+    @if (steps.Any())
+    {
+        <!-- Lifecycle walkthrough -->
+        <h2 class="cp-section-title">Lifecycle walkthrough</h2>
+        <p class="cp-section-sub">
+            Toggle between a <strong>genuine customer</strong> and a <strong>fraud attempt</strong> to see how the
+            platform responds at each step.
+        </p>
+
+        <div class="cp-toggle mb-4" role="group">
+            <button type="button" class="cp-toggle-btn active" data-mode="genuine">✅ Genuine customer</button>
+            <button type="button" class="cp-toggle-btn" data-mode="fraud">🚨 Fraud attempt</button>
+        </div>
+
+        <div class="cp-steps">
+            @for (int i = 0; i < steps.Count; i++)
+            {
+                var s = steps[i];
+                <div class="cp-step">
+                    <div class="cp-step-rail">
+                        <div class="cp-step-dot" style="--accent:@Model.Accent">@s.Icon</div>
+                        @if (i < steps.Count - 1) { <div class="cp-step-line"></div> }
+                    </div>
+                    <div class="cp-step-body">
+                        <h3 class="cp-step-title">@s.Title</h3>
+                        <p class="cp-step-desc">@s.Description</p>
+                        <div class="cp-outcome cp-outcome-genuine">
+                            <span class="cp-outcome-label">✅ Genuine user</span>
+                            <p>@s.GenuineOutcome</p>
+                        </div>
+                        <div class="cp-outcome cp-outcome-fraud d-none">
+                            <span class="cp-outcome-label">🚨 Fraud detected</span>
+                            <p>@s.FraudOutcome</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <div class="cp-cta-row">
+        @if (isCortex)
+        {
+            <a class="btn cp-btn-primary btn-lg" asp-controller="Engine" asp-action="Index">⚙️ Run this through the Rule Engine →</a>
+        }
+        else
+        {
+            <a class="btn cp-btn-outline btn-lg" asp-controller="Engine" asp-action="Index">See how transactions are decided →</a>
+        }
+        <a class="btn cp-btn-ghost btn-lg" asp-controller="Home" asp-action="Index">← Back to catalog</a>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.querySelectorAll('.cp-toggle-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var mode = this.dataset.mode;
+            document.querySelectorAll('.cp-toggle-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            var genuine = mode === 'genuine';
+            document.querySelectorAll('.cp-outcome-genuine').forEach(e => e.classList.toggle('d-none', !genuine));
+            document.querySelectorAll('.cp-outcome-fraud').forEach(e => e.classList.toggle('d-none', genuine));
+        });
+    });
+</script>
+}

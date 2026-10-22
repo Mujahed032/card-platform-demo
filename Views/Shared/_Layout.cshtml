@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CardPlatform</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-md navbar-dark cp-nav box-shadow">
+            <div class="container">
+                <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">
+                    💳 CardPlatform<span class="cp-brand-sub">Demo</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-md-inline-flex justify-content-end">
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index" asp-fragment="emcrey">eMcREY</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index" asp-fragment="cortex">FIS Cortex</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Engine" asp-action="Index">Rule Engine</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main role="main">
+        @RenderBody()
+    </main>
+
+    <footer class="cp-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-7">
+                    <strong>CardPlatform Demo</strong> — an educational ASP.NET Core MVC walkthrough of how banks
+                    integrate card products with <strong>eMcREY</strong> (Card Management System) and
+                    <strong>FIS Cortex</strong> (rule engine).
+                </div>
+                <div class="col-md-5 text-md-end mt-2 mt-md-0">
+                    <span class="cp-footer-note">Concepts are illustrative. eMcREY &amp; Cortex are referenced for demonstration.</span>
+                </div>
+            </div>
+            <div class="cp-copy">&copy; @DateTime.Now.Year CardPlatform Demo &bull; Built with ASP.NET Core MVC</div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
