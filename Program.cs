@@ -8,9 +8,14 @@ builder.Services.AddControllersWithViews();
 // In-memory card catalog + rule engine (no database).
 builder.Services.AddSingleton<CardCatalog>();
 
-// Render / cloud: bind to the port provided via the PORT env variable (default 8080).
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+// Render / cloud: bind to the port provided via the PORT env variable.
+// Only applied when PORT is set (Render sets it). Locally this is skipped so
+// Visual Studio uses launchSettings.json and opens the browser automatically.
+var port = Environment.GetEnvironmentVariable("PORT");
+if (!string.IsNullOrEmpty(port))
+{
+    builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+}
 
 var app = builder.Build();
 
